@@ -2,8 +2,14 @@ import os
 import hashlib
 import numpy as np
 from typing import List, Dict, Any, Optional
-import chromadb
-from chromadb.config import Settings as ChromaSettings
+
+try:
+    import chromadb
+    from chromadb.config import Settings as ChromaSettings
+    HAS_CHROMADB = True
+except Exception:
+    HAS_CHROMADB = False
+
 from backend.config import settings
 
 class ResilientDenseVectorizer:
@@ -50,15 +56,23 @@ class ResilientDenseVectorizer:
 
 class EmbeddingService:
     def __init__(self):
-        self.chroma_client = chromadb.PersistentClient(
-            path=str(settings.CHROMA_DIR),
-            settings=ChromaSettings(anonymized_telemetry=False)
-        )
-        self.collection_name = "aegis_chunks"
-        self.collection = self.chroma_client.get_or_create_collection(
-            name=self.collection_name,
-            metadata={"description": "Document chunks for Aegis Series-7 HCS"}
-        )
+        self.chroma_client = None
+        self.collection = None
+        if HAS_CHROMADB:
+            try:
+                self.chroma_client = chromadb.PersistentClient(
+                    path=str(settings.CHROMA_DIR),
+                    settings=ChromaSettings(anonymized_telemetry=False)
+                )
+                self.collection_name = "aegis_chunks"
+                self.collection = self.chroma_client.get_or_create_collection(
+                    name=self.collection_name,
+                    metadata={"description": "Document chunks for Aegis Series-7 HCS"}
+                )
+            except Exception as e:
+                print(f"Warning: ChromaDB initialization bypassed: {e}")
+                self.collection = None
+
         self.vectorizer = ResilientDenseVectorizer(dim=384)
         self._st_model = None
         self._use_st = True
@@ -89,7 +103,7 @@ class EmbeddingService:
         return self._get_embeddings([text])[0]
 
     def add_chunks(self, chunks: List[Dict[str, Any]]):
-        if not chunks:
+        if not chunks or not self.collection:
             return
 
         ids = [str(c["id"]) for c in chunks]
@@ -113,6 +127,8 @@ class EmbeddingService:
         )
 
     def search(self, query: str, top_k: int = 5, where: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        if not self.collection:
+            return []
         query_emb = self.compute_embedding(query)
         kwargs = {
             "query_embeddings": [query_emb],
