@@ -52,3 +52,5 @@ backend/data/reports/*
 .DS_Store
 Thumbs.db
 .vercel/
+
+.vercel

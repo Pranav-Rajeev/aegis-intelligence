@@ -16,10 +16,17 @@ if IS_VERCEL:
     
     # Initialize writeable directory and seed database in /tmp
     data_dir.mkdir(parents=True, exist_ok=True)
-    orig_db = BASE_DIR / "data" / "aegis.db"
-    if orig_db.exists() and not db_file.exists():
-        import shutil
-        shutil.copyfile(orig_db, db_file)
+    potential_dbs = [
+        BASE_DIR / "data" / "aegis.db",
+        PROJECT_ROOT / "backend" / "data" / "aegis.db",
+        Path("/var/task/backend/data/aegis.db")
+    ]
+    if not db_file.exists():
+        for orig in potential_dbs:
+            if orig.exists() and orig.stat().st_size > 0:
+                import shutil
+                shutil.copyfile(orig, db_file)
+                break
     database_url = f"sqlite:///{db_file}"
 else:
     data_dir = BASE_DIR / "data"
@@ -32,6 +39,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Aegis Intelligence"
     VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
+    IS_VERCEL: bool = IS_VERCEL
     
     # Paths
     DATA_DIR: Path = data_dir

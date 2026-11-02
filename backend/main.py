@@ -51,6 +51,9 @@ app.include_router(evaluation.router, prefix=settings.API_PREFIX)
 app.include_router(reports.router, prefix=settings.API_PREFIX)
 
 @app.get("/")
+@app.get("/api")
+@app.get("/api/")
+@app.get("/api/index.py")
 def root():
     return {
         "platform": settings.PROJECT_NAME,
@@ -82,47 +85,48 @@ def startup_event():
         seed_components_if_empty(db)
         scan_and_register_conflicts(db)
 
-        # 3. Auto-seed Aegis dataset if documents table is empty
-        doc_count = db.query(Document).count()
-        if doc_count < 20 and settings.DEFAULT_DATASET_DIR.exists():
-            print(f"Auto-seeding Aegis Series-7 dataset from {settings.DEFAULT_DATASET_DIR}...")
-            for root, dirs, files in os.walk(settings.DEFAULT_DATASET_DIR):
-                for f in files:
-                    full_path = os.path.join(root, f)
-                    ext = os.path.splitext(f)[1].replace(".", "").lower()
-                    if not ext:
-                        continue
+        # 3. Auto-seed Aegis dataset if documents table is empty (skip during Vercel cold starts)
+        if not settings.IS_VERCEL:
+            doc_count = db.query(Document).count()
+            if doc_count < 20 and settings.DEFAULT_DATASET_DIR.exists():
+                print(f"Auto-seeding Aegis Series-7 dataset from {settings.DEFAULT_DATASET_DIR}...")
+                for root, dirs, files in os.walk(settings.DEFAULT_DATASET_DIR):
+                    for f in files:
+                        full_path = os.path.join(root, f)
+                        ext = os.path.splitext(f)[1].replace(".", "").lower()
+                        if not ext:
+                            continue
 
-                    file_hash = compute_file_hash(full_path)
-                    existing = db.query(Document).filter(Document.file_hash == file_hash).first()
-                    if existing:
-                        continue
+                        file_hash = compute_file_hash(full_path)
+                        existing = db.query(Document).filter(Document.file_hash == file_hash).first()
+                        if existing:
+                            continue
 
-                    category, trust_level, trust_score = assess_trust_and_category(full_path)
-                    doc = Document(
-                        filename=f,
-                        file_path=full_path,
-                        file_type=ext,
-                        file_size=os.path.getsize(full_path),
-                        file_hash=file_hash,
-                        category=category,
-                        trust_level=trust_level,
-                        trust_score=trust_score,
-                        status="PROCESSING"
-                    )
-                    db.add(doc)
-                    db.commit()
-                    db.refresh(doc)
+                        category, trust_level, trust_score = assess_trust_and_category(full_path)
+                        doc = Document(
+                            filename=f,
+                            file_path=full_path,
+                            file_type=ext,
+                            file_size=os.path.getsize(full_path),
+                            file_hash=file_hash,
+                            category=category,
+                            trust_level=trust_level,
+                            trust_score=trust_score,
+                            status="PROCESSING"
+                        )
+                        db.add(doc)
+                        db.commit()
+                        db.refresh(doc)
 
-                    # Ingest synchronously
-                    documents.process_document_sync(doc.id, db)
-            
-            print(f"Seeded {db.query(Document).count()} documents.")
-            
-            # Run initial evaluation
-            print("Executing initial evaluation benchmark...")
-            run_evaluation_suite(db)
-            print("Initial evaluation completed.")
+                        # Ingest synchronously
+                        documents.process_document_sync(doc.id, db)
+                
+                print(f"Seeded {db.query(Document).count()} documents.")
+                
+                # Run initial evaluation
+                print("Executing initial evaluation benchmark...")
+                run_evaluation_suite(db)
+                print("Initial evaluation completed.")
 
     finally:
         db.close()
