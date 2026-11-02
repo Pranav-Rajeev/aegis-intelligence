@@ -3,17 +3,26 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "functions": {
     "api/index.py": {
-      "includeFiles": [
-        "backend/data/**",
-        "frontend/dist/**"
-      ],
+      "includeFiles": "{backend/data/**,frontend/dist/**}",
       "maxDuration": 15
     }
   },
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "/api/index.py?__path=api"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py?__path=api/$1"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/api/index.py?__path=assets/$1"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": "/api/index.py?__path=$1"
     }
   ]
 }

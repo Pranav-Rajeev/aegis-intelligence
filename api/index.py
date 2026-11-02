@@ -23,20 +23,7 @@ class VercelPathCorrectionMiddleware:
 
     async def __call__(self, scope, receive, send):
         if scope.get("type") == "http":
-            headers = dict(scope.get("headers", []))
-            
-            # 1. Check for Vercel matched path header
-            raw_matched = headers.get(b"x-matched-path") or headers.get(b"x-vercel-matched-path")
-            if raw_matched:
-                try:
-                    matched_path = raw_matched.decode("utf-8").split("?")[0]
-                    if matched_path:
-                        scope["path"] = matched_path
-                        scope["raw_path"] = matched_path.encode("utf-8")
-                except Exception:
-                    pass
-
-            # 2. Check for __path parameter if forwarded
+            # 1. Check for __path parameter if forwarded by rewrite
             query_string = scope.get("query_string", b"").decode("utf-8", errors="ignore")
             if "__path=" in query_string:
                 params = urllib.parse.parse_qsl(query_string, keep_blank_values=True)
@@ -48,15 +35,29 @@ class VercelPathCorrectionMiddleware:
                     else:
                         clean_params.append((k, v))
                 if path_val is not None:
-                    scope["path"] = f"/{path_val.lstrip('/')}"
+                    clean_path = path_val.strip("/")
+                    scope["path"] = f"/{clean_path}" if clean_path else "/"
                     scope["raw_path"] = scope["path"].encode("utf-8")
                     scope["query_string"] = urllib.parse.urlencode(clean_params).encode("utf-8")
 
-            # 3. Fallback when path points directly to serverless entry point
+            # 2. Check for Vercel matched path header if path is still /api/index.py
             curr_path = scope.get("path", "")
             if curr_path in ("/api/index.py", "/index.py", "/api/index", "/index"):
-                scope["path"] = "/"
-                scope["raw_path"] = b"/"
+                headers = dict(scope.get("headers", []))
+                raw_matched = headers.get(b"x-matched-path") or headers.get(b"x-vercel-matched-path")
+                if raw_matched:
+                    try:
+                        matched_path = raw_matched.decode("utf-8").split("?")[0]
+                        if matched_path and matched_path not in ("/api/index.py", "/index.py"):
+                            scope["path"] = matched_path
+                            scope["raw_path"] = matched_path.encode("utf-8")
+                    except Exception:
+                        pass
+                
+                # If still unresolved, default to root '/'
+                if scope.get("path") in ("/api/index.py", "/index.py", "/api/index", "/index"):
+                    scope["path"] = "/"
+                    scope["raw_path"] = b"/"
 
         await self.inner_app(scope, receive, send)
 
