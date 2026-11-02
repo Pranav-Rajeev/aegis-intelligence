@@ -202,27 +202,33 @@ export const ComponentsPage: React.FC = () => {
               placeholder="Search components or aliases..."
               className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono"
             />
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1.5 p-1 bg-slate-950 rounded-lg border border-slate-800/80">
               <button
                 onClick={() => setStatusFilter('')}
-                className={`flex-1 py-1 text-[11px] rounded font-mono font-semibold transition-colors ${
-                  statusFilter === '' ? 'bg-sky-500 text-slate-950' : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                className={`flex-1 py-1 text-[11px] rounded font-mono font-semibold transition-all duration-200 ${
+                  statusFilter === ''
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_8px_rgba(56,189,248,0.2)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent'
                 }`}
               >
                 All
               </button>
               <button
                 onClick={() => setStatusFilter('Active')}
-                className={`flex-1 py-1 text-[11px] rounded font-mono font-semibold transition-colors ${
-                  statusFilter === 'Active' ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                className={`flex-1 py-1 text-[11px] rounded font-mono font-semibold transition-all duration-200 ${
+                  statusFilter === 'Active'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-[0_0_8px_rgba(52,211,153,0.2)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent'
                 }`}
               >
                 Active
               </button>
               <button
                 onClick={() => setStatusFilter('Superseded')}
-                className={`flex-1 py-1 text-[11px] rounded font-mono font-semibold transition-colors ${
-                  statusFilter === 'Superseded' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                className={`flex-1 py-1 text-[11px] rounded font-mono font-semibold transition-all duration-200 ${
+                  statusFilter === 'Superseded'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_8px_rgba(251,191,36,0.2)]'
+                    : 'text-slate-400 hover:text-slate-200 border border-transparent'
                 }`}
               >
                 Superseded
@@ -235,12 +241,15 @@ export const ComponentsPage: React.FC = () => {
               <div
                 key={c.id}
                 onClick={() => setSelectedComp(c)}
-                className={`p-3 rounded-xl border text-xs font-mono cursor-pointer transition-all ${
+                className={`p-3 rounded-xl border text-xs font-mono cursor-pointer transition-all duration-200 relative overflow-hidden ${
                   selectedComp?.id === c.id
-                    ? 'bg-sky-500/15 border-sky-500/50 text-slate-100 shadow-md'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
+                    ? 'bg-sky-500/15 border-sky-500/50 text-slate-100 shadow-[0_0_16px_rgba(56,189,248,0.18)] pl-3.5 translate-x-1'
+                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 hover:translate-x-0.5'
                 }`}
               >
+                {selectedComp?.id === c.id && (
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-sky-400 rounded-r shadow-[0_0_8px_#38BDF8]" />
+                )}
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sky-400 text-sm">{c.component_id}</span>
                   <span className={`text-[9px] px-1.5 py-0.5 rounded font-semibold ${

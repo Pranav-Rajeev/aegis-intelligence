@@ -58,8 +58,8 @@ export const KnowledgeExplorerPage: React.FC = () => {
         nodes: graphRes.nodes.map((n: any) => ({
           ...n,
           style: {
-            background: '#182235',
-            color: '#F1F5F9',
+            background: '#222227',
+            color: '#F4F4F6',
             border: '1px solid #38BDF8',
             borderRadius: '8px',
             padding: '10px',
@@ -128,11 +128,13 @@ export const KnowledgeExplorerPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs font-mono">
+        <div className="flex items-center space-x-1.5 bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs font-mono">
           <button
             onClick={() => setActiveTab('graph')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-colors flex items-center space-x-1.5 ${
-              activeTab === 'graph' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+              activeTab === 'graph'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_12px_rgba(56,189,248,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent'
             }`}
           >
             <Network className="w-3.5 h-3.5" />
@@ -140,8 +142,10 @@ export const KnowledgeExplorerPage: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('claims')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-colors flex items-center space-x-1.5 ${
-              activeTab === 'claims' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+              activeTab === 'claims'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_12px_rgba(56,189,248,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent'
             }`}
           >
             <Database className="w-3.5 h-3.5" />
@@ -149,8 +153,10 @@ export const KnowledgeExplorerPage: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('compare')}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-colors flex items-center space-x-1.5 ${
-              activeTab === 'compare' ? 'bg-sky-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+              activeTab === 'compare'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_12px_rgba(56,189,248,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent'
             }`}
           >
             <GitCompare className="w-3.5 h-3.5" />
@@ -168,7 +174,7 @@ export const KnowledgeExplorerPage: React.FC = () => {
             onNodeClick={handleNodeClick}
             fitView
           >
-            <Background color="#1E293B" gap={16} />
+            <Background color="#2C2C32" gap={16} />
             <Controls className="!bg-slate-900 !border-slate-800 text-slate-200" />
             <MiniMap
               nodeColor={() => '#38BDF8'}

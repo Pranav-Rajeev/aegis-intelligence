@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header
       className="h-16 border-b flex items-center justify-between px-6 select-none sticky top-0 z-20 backdrop-blur-md"
       style={{
-        backgroundColor: 'rgba(17, 24, 39, 0.85)',
+        backgroundColor: 'var(--bg-slate)',
         borderColor: 'var(--border-subtle)'
       }}
     >

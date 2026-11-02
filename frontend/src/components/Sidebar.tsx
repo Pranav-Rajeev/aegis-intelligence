@@ -89,14 +89,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               key={item.id}
               onClick={() => setCurrentTab(item.id)}
-              className={`w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative ${
+              className={`w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden ${
                 isActive
-                  ? 'bg-sky-500/15 text-sky-400 border border-sky-500/30 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'nav-active-pill font-semibold'
+                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
               }`}
             >
+              {isActive && <div className="nav-active-indicator" />}
               <Icon
-                className={`w-5 h-5 shrink-0 transition-transform ${
+                className={`w-5 h-5 shrink-0 transition-all duration-200 ${
                   isActive ? 'text-sky-400 scale-105' : 'text-slate-400 group-hover:text-slate-200'
                 } ${!collapsed ? 'mr-3' : 'mx-auto'}`}
               />

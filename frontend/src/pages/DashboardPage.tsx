@@ -199,7 +199,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigateTab, onA
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#1C1C21', borderColor: '#3A3A44', borderRadius: '8px', fontSize: '12px', color: '#F4F4F6' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -219,7 +219,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigateTab, onA
               <BarChart data={stats?.source_reliability_distribution || []}>
                 <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#1C1C21', borderColor: '#3A3A44', borderRadius: '8px', fontSize: '12px', color: '#F4F4F6' }} />
                 <Bar dataKey="value" fill="#38BDF8" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -240,7 +240,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigateTab, onA
               <BarChart data={stats?.confidence_distribution || []}>
                 <XAxis dataKey="bucket" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#1C1C21', borderColor: '#3A3A44', borderRadius: '8px', fontSize: '12px', color: '#F4F4F6' }} />
                 <Bar dataKey="count" fill="#818CF8" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -261,7 +261,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigateTab, onA
               <BarChart data={stats?.extraction_activity || []}>
                 <XAxis dataKey="type" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#1C1C21', borderColor: '#3A3A44', borderRadius: '8px', fontSize: '12px', color: '#F4F4F6' }} />
                 <Bar dataKey="claims" fill="#34D399" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

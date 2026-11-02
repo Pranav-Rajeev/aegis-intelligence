@@ -50,6 +50,27 @@ app.include_router(knowledge.router, prefix=settings.API_PREFIX)
 app.include_router(evaluation.router, prefix=settings.API_PREFIX)
 app.include_router(reports.router, prefix=settings.API_PREFIX)
 
+@app.get("/")
+def root():
+    return {
+        "platform": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "status": "ONLINE",
+        "description": "Aegis Series-7 Hydraulic Control System Knowledge & Intelligence Engine",
+        "interactive_api_docs": "/docs",
+        "redoc_docs": "/redoc",
+        "frontend_ui": "http://localhost:5173",
+        "endpoints": {
+            "dashboard_stats": f"{settings.API_PREFIX}/dashboard/stats",
+            "documents": f"{settings.API_PREFIX}/documents",
+            "chat": f"{settings.API_PREFIX}/chat",
+            "components": f"{settings.API_PREFIX}/components",
+            "knowledge": f"{settings.API_PREFIX}/knowledge",
+            "evaluation": f"{settings.API_PREFIX}/evaluation",
+            "reports": f"{settings.API_PREFIX}/reports"
+        }
+    }
+
 @app.on_event("startup")
 def startup_event():
     # 1. Create DB tables

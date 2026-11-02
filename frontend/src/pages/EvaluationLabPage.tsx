@@ -189,32 +189,40 @@ export const EvaluationLabPage: React.FC = () => {
         <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800 w-full md:w-auto">
           <button
             onClick={() => setFilterMode('all')}
-            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
-              filterMode === 'all' ? 'bg-sky-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 ${
+              filterMode === 'all'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_8px_rgba(56,189,248,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 border border-transparent'
             }`}
           >
             All (23)
           </button>
           <button
             onClick={() => setFilterMode('positive')}
-            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
-              filterMode === 'positive' ? 'bg-sky-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 ${
+              filterMode === 'positive'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_8px_rgba(56,189,248,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 border border-transparent'
             }`}
           >
             Standard Q&amp;A (18)
           </button>
           <button
             onClick={() => setFilterMode('abstention')}
-            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
-              filterMode === 'abstention' ? 'bg-sky-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 ${
+              filterMode === 'abstention'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_8px_rgba(56,189,248,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 border border-transparent'
             }`}
           >
             Abstention / Gaps (5)
           </button>
           <button
             onClick={() => setFilterMode('passed')}
-            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
-              filterMode === 'passed' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-slate-200'
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 ${
+              filterMode === 'passed'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-[0_0_8px_rgba(52,211,153,0.2)]'
+                : 'text-slate-400 hover:text-slate-100 border border-transparent'
             }`}
           >
             Passed (23)
@@ -240,13 +248,15 @@ export const EvaluationLabPage: React.FC = () => {
           return (
             <div
               key={r.id}
-              className={`rounded-xl border transition-all ${
-                r.is_correct ? 'bg-slate-900/90 border-slate-800' : 'bg-red-950/20 border-red-500/40'
+              className={`rounded-xl border transition-all duration-200 overflow-hidden ${
+                isExpanded
+                  ? 'border-sky-500/50 shadow-[0_0_20px_rgba(56,189,248,0.15)] bg-slate-900'
+                  : r.is_correct ? 'bg-slate-900/90 border-slate-800 hover:border-slate-700' : 'bg-red-950/20 border-red-500/40'
               }`}
             >
               <div
                 onClick={() => setExpandedRow(isExpanded ? null : r.id)}
-                className="p-4 flex items-start justify-between cursor-pointer hover:bg-slate-800/40 transition-colors"
+                className="p-4 flex items-start justify-between cursor-pointer hover:bg-slate-800/40 transition-all duration-200"
               >
                 <div className="flex items-start space-x-3 max-w-4xl">
                   <span className="font-bold text-sky-400 shrink-0 text-sm">

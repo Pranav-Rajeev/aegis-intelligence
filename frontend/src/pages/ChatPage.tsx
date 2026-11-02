@@ -251,12 +251,15 @@ export const ChatPage: React.FC<ChatPageProps> = ({ initialQuestion, onClearInit
               <div
                 key={c.id}
                 onClick={() => loadConversation(c.id)}
-                className={`p-2.5 rounded-lg text-xs font-medium cursor-pointer flex items-center justify-between group transition-colors ${
+                className={`p-2.5 rounded-lg text-xs font-medium cursor-pointer flex items-center justify-between group transition-all duration-200 relative overflow-hidden ${
                   activeConvId === c.id
-                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
-                    : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
+                    ? 'bg-sky-500/15 text-sky-300 border border-sky-500/35 shadow-[0_0_12px_rgba(56,189,248,0.15)] pl-3.5'
+                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 border border-transparent'
                 }`}
               >
+                {activeConvId === c.id && (
+                  <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-sky-400 rounded-r shadow-[0_0_8px_#38BDF8]" />
+                )}
                 <div className="truncate mr-2">
                   <p className="truncate">{c.title}</p>
                   <span className="text-[10px] text-slate-500 font-mono">
