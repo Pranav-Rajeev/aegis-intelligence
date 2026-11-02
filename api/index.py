@@ -14,19 +14,30 @@ class VercelPathCorrectionMiddleware:
     ASGI middleware ensuring that Vercel Serverless routing correctly maps
     incoming paths to FastAPI routes.
     
-    1. Extracts '__path' parameter forwarded by vercel.json rewrite:
-       e.g. /api/:path* -> /api/index.py?__path=:path*
-    2. Strips '__path' from query string so endpoints receive clean user query params.
-    3. Normalizes paths so that sub-paths match FastAPI routes registered under /api.
+    1. Extracts 'x-matched-path' or 'x-vercel-matched-path' header from Vercel edge router.
+    2. Supports query-forwarded '__path' parameter if present.
+    3. Normalizes /api/index.py or /index.py to '/'.
     """
     def __init__(self, inner_app):
         self.inner_app = inner_app
 
     async def __call__(self, scope, receive, send):
         if scope.get("type") == "http":
-            query_string = scope.get("query_string", b"").decode("utf-8", errors="ignore")
+            headers = dict(scope.get("headers", []))
             
-            # Check for __path parameter forwarded by rewrite
+            # 1. Check for Vercel matched path header
+            raw_matched = headers.get(b"x-matched-path") or headers.get(b"x-vercel-matched-path")
+            if raw_matched:
+                try:
+                    matched_path = raw_matched.decode("utf-8").split("?")[0]
+                    if matched_path:
+                        scope["path"] = matched_path
+                        scope["raw_path"] = matched_path.encode("utf-8")
+                except Exception:
+                    pass
+
+            # 2. Check for __path parameter if forwarded
+            query_string = scope.get("query_string", b"").decode("utf-8", errors="ignore")
             if "__path=" in query_string:
                 params = urllib.parse.parse_qsl(query_string, keep_blank_values=True)
                 path_val = None
@@ -36,20 +47,16 @@ class VercelPathCorrectionMiddleware:
                         path_val = v
                     else:
                         clean_params.append((k, v))
-                
-                if path_val:
-                    path_val = path_val.lstrip("/")
-                    scope["path"] = f"/api/{path_val}"
+                if path_val is not None:
+                    scope["path"] = f"/{path_val.lstrip('/')}"
                     scope["raw_path"] = scope["path"].encode("utf-8")
                     scope["query_string"] = urllib.parse.urlencode(clean_params).encode("utf-8")
-            else:
-                curr_path = scope.get("path", "")
-                if curr_path in ("/api/index.py", "/index.py", "/api/index", "/index"):
-                    scope["path"] = "/api"
-                    scope["raw_path"] = b"/api"
-                elif curr_path and not curr_path.startswith("/api") and curr_path != "/":
-                    scope["path"] = f"/api{curr_path}"
-                    scope["raw_path"] = scope["path"].encode("utf-8")
+
+            # 3. Fallback when path points directly to serverless entry point
+            curr_path = scope.get("path", "")
+            if curr_path in ("/api/index.py", "/index.py", "/api/index", "/index"):
+                scope["path"] = "/"
+                scope["raw_path"] = b"/"
 
         await self.inner_app(scope, receive, send)
 

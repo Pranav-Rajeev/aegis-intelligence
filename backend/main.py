@@ -1,7 +1,10 @@
 import os
 import uvicorn
-from fastapi import FastAPI
+from pathlib import Path
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from backend.config import settings
 from backend.database import Base, engine, SessionLocal
 from backend.models import *
@@ -50,11 +53,41 @@ app.include_router(knowledge.router, prefix=settings.API_PREFIX)
 app.include_router(evaluation.router, prefix=settings.API_PREFIX)
 app.include_router(reports.router, prefix=settings.API_PREFIX)
 
+# Frontend static distribution resolution
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
+potential_dist_dirs = [
+    PROJECT_ROOT / "frontend" / "dist",
+    BASE_DIR.parent / "frontend" / "dist",
+    Path("/var/task/frontend/dist"),
+    Path(__file__).resolve().parent.parent / "frontend" / "dist"
+]
+dist_dir = None
+for p in potential_dist_dirs:
+    if p.exists() and (p / "index.html").exists():
+        dist_dir = p
+        break
+
+if dist_dir and (dist_dir / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(dist_dir / "assets")), name="assets")
+
 @app.get("/")
+def root():
+    if dist_dir and (dist_dir / "index.html").exists():
+        return FileResponse(str(dist_dir / "index.html"))
+    return {
+        "platform": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "status": "ONLINE",
+        "description": "Aegis Series-7 Hydraulic Control System Knowledge & Intelligence Engine",
+        "interactive_api_docs": "/docs",
+        "redoc_docs": "/redoc"
+    }
+
 @app.get("/api")
 @app.get("/api/")
 @app.get("/api/index.py")
-def root():
+def api_discovery():
     return {
         "platform": settings.PROJECT_NAME,
         "version": settings.VERSION,
@@ -139,6 +172,25 @@ def health_check():
         "version": settings.VERSION,
         "database": "connected"
     }
+
+@app.get("/{full_path:path}")
+def serve_spa(full_path: str):
+    # API 404 handler
+    if full_path.startswith("api"):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+        
+    # Static file check
+    if dist_dir:
+        target_file = dist_dir / full_path
+        if target_file.is_file():
+            return FileResponse(str(target_file))
+            
+        # SPA index.html fallback for client-side routing
+        index_file = dist_dir / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+            
+    raise HTTPException(status_code=404, detail="Not Found")
 
 if __name__ == "__main__":
     uvicorn.run("backend.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
