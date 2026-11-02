@@ -3,6 +3,14 @@
 ## AI-Powered Technical Knowledge & Document Intelligence Platform
 ### Aegis Series-7 Hydraulic Control System (HCS)
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel%20Production-00E5FF?style=for-the-badge&logo=vercel&logoColor=white)](https://aegis-intelligence-eta.vercel.app)
+[![FastAPI](https://img.shields.io/badge/FastAPI-1.0.0-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React 19](https://img.shields.io/badge/React%2019-Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+
+> 🌐 **Live Cloud Deployment:** [https://aegis-intelligence-eta.vercel.app](https://aegis-intelligence-eta.vercel.app)  
+> 📖 **Interactive API Documentation:** [https://aegis-intelligence-eta.vercel.app/docs](https://aegis-intelligence-eta.vercel.app/docs)
+
 ---
 
 ## 1. Executive Summary
